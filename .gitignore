@@ -1,0 +1,6 @@
+.idea/
+__pycache__/
+help/
+README.html
+i18n/CustomSVG.pro
+i18n/CustomSVG_fr.ts
