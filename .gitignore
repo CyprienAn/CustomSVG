@@ -1,5 +1,6 @@
 .idea/
 __pycache__/
 compile.py
+resources.qrc
 i18n/CustomSVG.pro
 i18n/CustomSVG_fr.ts
