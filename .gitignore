@@ -1,6 +1,5 @@
 .idea/
 __pycache__/
 compile.py
-old_compile.py
 i18n/CustomSVG.pro
 i18n/CustomSVG_fr.ts
