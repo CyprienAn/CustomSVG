@@ -221,7 +221,7 @@ class CustomSVG:
          """
 
         # Get all SVGs files in the Input folder
-        svg_files = glob.glob("{}\\*.svg".format(dir_input))
+        svg_files = glob.glob("{}/*.svg".format(dir_input))
         svg_count = 0
 
         # Modify all SVGs one by one
@@ -240,7 +240,7 @@ class CustomSVG:
                 svg_file.close()
 
                 # List of parameters that we have to adapt in the code
-                list_param = {"fill:": "param(fill) ",
+                dict_param = {"fill:": "param(fill) ",
                               "fill-opacity:": "param(fill-opacity) ",
                               "stroke:": "param(outline) ",
                               "stroke-opacity:": "param(outline-opacity) ",
@@ -267,7 +267,14 @@ class CustomSVG:
                         old_path_tag = path_tag = svg_code[idx_start_path:idx_end_path + 2]
 
                         # Replace all parameter in path tag
-                        for param in list_param:
+                        for param in dict_param:
+                            # List of parameter to avoid for the change
+                            list_avoid_param = ["param(fill)",
+                                                "param(fill-opacity)",
+                                                "param(outline)",
+                                                "param(outline-opacity)",
+                                                "param(outline-width)",
+                                                "none"]
 
                             # Start and End indexes in the string of the current parameter
                             idx_start_param = path_tag.find(param)
@@ -279,16 +286,14 @@ class CustomSVG:
                                 # Extract the original value of parameter
                                 old_tag = path_tag[idx_start_param:idx_end_param + 1]
 
-                                # Verify if the value isn't "none"
-                                if old_tag.find("none") == -1:
-
-                                    # Replace the old value by the new one define in "list_param"
-                                    new_tag = old_tag.replace(param, param + list_param[param])
-                                    path_tag = path_tag.replace(old_tag, new_tag)
-
-                                # If the value is "none", we don't change the value
-                                else:
+                                # Verify if the value isn't in "list_avoid_param"
+                                if any([avoid in old_tag for avoid in list_avoid_param]):
+                                    # If the value is "list_avoid_param", we don't change the value
                                     pass
+                                else:
+                                    # Replace the old value by the new one define in "dict_param"
+                                    new_tag = old_tag.replace(param, param + dict_param[param])
+                                    path_tag = path_tag.replace(old_tag, new_tag)
 
                             # Verify if current parameter exist and if it's the last parameter in path tag
                             elif idx_start_param != -1 and idx_end_param == -1:
@@ -296,16 +301,14 @@ class CustomSVG:
                                 # Extract the original value of parameter
                                 old_tag = path_tag[idx_start_param:idx_end_param]
 
-                                # Verify if the value isn't "none"
-                                if old_tag.find("none") == -1:
-
-                                    # Replace the old value by the new one define in "list_param"
-                                    new_tag = old_tag.replace(param, param + list_param[param])
-                                    path_tag = path_tag.replace(old_tag, new_tag)
-
-                                # If the value is "none", we don't change the value
-                                else:
+                                # Verify if the value isn't in "list_avoid_param"
+                                if any([avoid in old_tag for avoid in list_avoid_param]):
+                                    # If the value is "list_avoid_param", we don't change the value
                                     pass
+                                else:
+                                    # Replace the old value by the new one define in "dict_param"
+                                    new_tag = old_tag.replace(param, param + dict_param[param])
+                                    path_tag = path_tag.replace(old_tag, new_tag)
 
                             # If the parameter does not exist in the path tag, we pass
                             else:
@@ -319,7 +322,7 @@ class CustomSVG:
                         search_path_tag = False
 
                 # Export of the new SVG
-                output_path = "{}\\qgs_{}".format(dir_output, name)
+                output_path = "{}/qgs_{}".format(dir_output, name)
                 output = open(output_path, "w")
                 output.write(svg_code)
                 output.close()
