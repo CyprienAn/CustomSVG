@@ -1,23 +1,26 @@
-# Que fait ce plugin ?
-Il permet l'adaptation de fichier SVG afin qu'ils soient modifiables dans QGIS.
+# What does this plugin do?
+It allows adaptation of SVG files so that they're editable in QGIS.
 
-# Comment ?
-Il modifie tous les SVG d'un dossier en remplacant les paramètres `styles` contenu dans les balises `path` et en réenregistrant le nouveau SVG au format `qgs_oldname.svg`.
-Les paramètres modifiés sont les suivants:
-* fill : `param(fill)`,
-* fill-opacity : `param(fill-opacity)`,
-* stroke : `param(outline)`,
-* stroke-opacity : `param(outline-opacity)`,
-* stroke-width : `param(outline-width)`.
+# How?
+It modifies all SVGs in a folder by replacing the parameters contained in the `path` tags and re-saving the new SVG in the format ` qgs_oldname.svg`.
+The parameters taken into account are as follows:
+* fill: `param (fill)`,
+* fill-opacity: `param (fill-opacity)`,
+* stroke: `param (outline)`,
+* stroke-opacity: `param (outline-opacity)`,
+* stroke-width: `param (outline-width)`.
 
-# Exemple
-Avant modification :
-
-    <path
-        style="fill:none;stroke:#000000;stroke-width:0.4;"
-    />
-Après modification :
+# Example
+Before modification:
 
     <path
-        style="fill:none;stroke:param(outline) #000000;stroke-width:param(outline-width) 0.4;"
+        style="fill:none ; stroke:#000000 ; stroke-width:0.4"
     />
+![alt text](example/before.png "SVG in QGIS properties before")
+
+After modification:
+
+    <path
+        style="fill:none ; stroke:param(outline) #000000 ; stroke-width:param(outline-width) 0.4"
+    />
+![alt text](example/after.png "SVG in QGIS properties after")
