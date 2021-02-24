@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Que fait ce plugin &quest;</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="que-fait-ce-plugin-">Que fait ce plugin ?</h1>
+<p>Il permet l'adaptation de fichier SVG afin qu'ils soient modifiables dans QGIS.</p>
+<h1 id="comment-">Comment ?</h1>
+<p>Il modifie tous les SVG d'un dossier en remplacant les paramètres <code>styles</code> contenu dans les balises <code>path</code> et en réenregistrant le nouveau SVG au format <code>qgs_oldname.svg</code>.
+Les paramètres modifiés sont les suivants:</p>
+<ul>
+<li>fill : <code>param(fill)</code>,</li>
+<li>fill-opacity : <code>param(fill-opacity)</code>,</li>
+<li>stroke : <code>param(outline)</code>,</li>
+<li>stroke-opacity : <code>param(outline-opacity)</code>,</li>
+<li>stroke-width : <code>param(outline-width)</code>.</li>
+</ul>
+<h1 id="exemple">Exemple</h1>
+<p>Avant modification :</p>
+<pre><code>&lt;path
+    style=&quot;fill:none;stroke:#000000;stroke-width:0.4;&quot;
+/&gt;
+</code></pre>
+<p>Après modification :</p>
+<pre><code>&lt;path
+    style=&quot;fill:none;stroke:param(outline) #000000;stroke-width:param(outline-width) 0.4;&quot;
+/&gt;</code></pre>
+
+    </body>
+    </html>
