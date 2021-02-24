@@ -211,7 +211,7 @@ class CustomSVG:
                                                     level=Qgis.Critical, duration=5)
 
     def modify_svg(self, dir_input, dir_output):
-        """Replaces in the svg file the parts needed to make the symbols editable in QGIS.
+        """Find in the svg file the parts needed to make the symbols editable in QGIS.
 
          :param dir_input: Folder path where to find SVGs.
          :type dir_input: str, QString
@@ -244,7 +244,13 @@ class CustomSVG:
                               "fill-opacity:": "param(fill-opacity) ",
                               "stroke:": "param(outline) ",
                               "stroke-opacity:": "param(outline-opacity) ",
-                              "stroke-width:": "param(outline-width) "}
+                              "stroke-width:": "param(outline-width) ",
+                              "fill=": "param(fill) ",
+                              "fill-opacity=": "param(fill-opacity) ",
+                              "stroke=": "param(outline) ",
+                              "stroke-opacity=": "param(outline-opacity) ",
+                              "stroke-width=": "param(outline-width) "
+                              }
 
                 # Define variables necessary for the smooth running of the loops
                 search_path_tag = True  # When we have all path tag, it will change in False
@@ -260,22 +266,16 @@ class CustomSVG:
                         # Index in the string of "<path"
                         idx_start_path = svg_code.find('<path', idx_end_path)
 
-                        # Index in the string of the end of "<path", "/>"
+                        # Index in the string of the end of "<path", "/>" or "</path>"
                         idx_end_path = svg_code.find('/>', idx_start_path)
+                        if idx_end_path == -1:
+                            idx_end_path = svg_code.find('</path>', idx_start_path)
 
                         # Get the code between two indexes
                         old_path_tag = path_tag = svg_code[idx_start_path:idx_end_path + 2]
 
                         # Replace all parameter in path tag
                         for param in dict_param:
-                            # List of parameter to avoid for the change
-                            list_avoid_param = ["param(fill)",
-                                                "param(fill-opacity)",
-                                                "param(outline)",
-                                                "param(outline-opacity)",
-                                                "param(outline-width)",
-                                                "none"]
-
                             # Start and End indexes in the string of the current parameter
                             idx_start_param = path_tag.find(param)
                             idx_end_param = path_tag.find(';', idx_start_param)
@@ -286,14 +286,7 @@ class CustomSVG:
                                 # Extract the original value of parameter
                                 old_tag = path_tag[idx_start_param:idx_end_param + 1]
 
-                                # Verify if the value isn't in "list_avoid_param"
-                                if any([avoid in old_tag for avoid in list_avoid_param]):
-                                    # If the value is "list_avoid_param", we don't change the value
-                                    pass
-                                else:
-                                    # Replace the old value by the new one define in "dict_param"
-                                    new_tag = old_tag.replace(param, param + dict_param[param])
-                                    path_tag = path_tag.replace(old_tag, new_tag)
+                                path_tag = replace_parameter(old_tag, param, dict_param[param], path_tag)
 
                             # Verify if current parameter exist and if it's the last parameter in path tag
                             elif idx_start_param != -1 and idx_end_param == -1:
@@ -301,14 +294,7 @@ class CustomSVG:
                                 # Extract the original value of parameter
                                 old_tag = path_tag[idx_start_param:idx_end_param]
 
-                                # Verify if the value isn't in "list_avoid_param"
-                                if any([avoid in old_tag for avoid in list_avoid_param]):
-                                    # If the value is "list_avoid_param", we don't change the value
-                                    pass
-                                else:
-                                    # Replace the old value by the new one define in "dict_param"
-                                    new_tag = old_tag.replace(param, param + dict_param[param])
-                                    path_tag = path_tag.replace(old_tag, new_tag)
+                                path_tag = replace_parameter(old_tag, param, dict_param[param], path_tag)
 
                             # If the parameter does not exist in the path tag, we pass
                             else:
@@ -331,3 +317,72 @@ class CustomSVG:
         self.iface.messageBar().pushMessage("Adapts SVG to QGIS",
                                             "{} adapted SVG - {}".format(svg_count, dir_output),
                                             level=Qgis.Success, duration=5)
+
+
+def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
+    """Replaces in the svg file the parts needed to make the symbols editable in QGIS.
+
+    :param old_tag: old part in path tag needed to modify
+    :type old_tag: str, QString
+
+    :param dict_param_key: key value of the tag
+    :type dict_param_key: str, QString
+
+    :param dict_param_value: value that replace the old tag
+    :type dict_param_value: str, QString
+
+    :param path_tag: all path tag that will be modify
+    :type path_tag: str, QString
+
+    :returns: The action that was created. Note that the action is also added to self.actions list.
+    :rtype:  str, QString
+    """
+
+    # List of parameter to avoid for the change
+    list_avoid_param = ["param(fill)",
+                        "param(fill-opacity)",
+                        "param(outline)",
+                        "param(outline-opacity)",
+                        "param(outline-width)",
+                        "none"]
+
+    # Verify if the value isn't in "list_avoid_param"
+    if any([avoid in old_tag for avoid in list_avoid_param]):
+        # If the value is "list_avoid_param", we don't change the value
+        pass
+    else:
+        idx_no_style_tag_dquote = old_tag.find("{}\"".format(dict_param_key))
+        idx_no_style_tag_squote = old_tag.find("{}'".format(dict_param_key))
+
+        if idx_no_style_tag_dquote != -1:
+            idx_start_quote = idx_no_style_tag_dquote + len(dict_param_key) + 1
+            idx_end_quote = old_tag.find('"', idx_start_quote)
+            old_dquote_value = old_tag[idx_no_style_tag_dquote:idx_end_quote + 1]
+            idx_dquote_value = old_dquote_value.find('"')
+            dquote_value = old_dquote_value[idx_dquote_value + 1:]
+            new_dquote_value = old_dquote_value.replace(dquote_value, dict_param_value + dquote_value)
+
+            new_tag = old_tag.replace(old_dquote_value, new_dquote_value)
+            new_path_tag = path_tag.replace(old_tag, new_tag)
+
+            return new_path_tag
+
+        elif idx_no_style_tag_squote != -1:
+            idx_start_quote = idx_no_style_tag_squote + len(dict_param_key) + 1
+            idx_end_quote = old_tag.find("'", idx_start_quote)
+            old_squote_value = old_tag[idx_no_style_tag_squote:idx_end_quote + 1]
+            idx_squote_value = old_squote_value.find("'")
+            squote_value = old_squote_value[idx_squote_value + 1:]
+            new_squote_value = old_squote_value.replace(squote_value, dict_param_value + squote_value)
+
+            new_tag = old_tag.replace(old_squote_value, new_squote_value)
+            new_path_tag = path_tag.replace(old_tag, new_tag)
+
+            return new_path_tag
+
+        else:
+            # Replace the old value by the new one define in "dict_param"
+            new_tag = old_tag.replace(dict_param_key, dict_param_key + dict_param_value)
+            path_tag = path_tag.replace(old_tag, new_tag)
+
+            return path_tag
