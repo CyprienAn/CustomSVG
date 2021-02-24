@@ -4,3 +4,4 @@ compile.py
 resources.qrc
 i18n/CustomSVG.pro
 i18n/CustomSVG_fr.ts
+icon.svg
