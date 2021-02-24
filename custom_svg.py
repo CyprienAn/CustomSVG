@@ -268,11 +268,13 @@ class CustomSVG:
 
                         # Index in the string of the end of "<path", "/>" or "</path>"
                         idx_end_path = svg_code.find('/>', idx_start_path)
+                        len_find = 2
                         if idx_end_path == -1:
                             idx_end_path = svg_code.find('</path>', idx_start_path)
+                            len_find = 8
 
                         # Get the code between two indexes
-                        old_path_tag = path_tag = svg_code[idx_start_path:idx_end_path + 2]
+                        old_path_tag = path_tag = svg_code[idx_start_path:idx_end_path + len_find]
 
                         # Replace all parameter in path tag
                         for param in dict_param:
@@ -334,7 +336,7 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
     :param path_tag: all path tag that will be modify
     :type path_tag: str, QString
 
-    :returns: The action that was created. Note that the action is also added to self.actions list.
+    :returns: path_tag without modification if an avoid parameter is detected or the new_path_tag after modifying him
     :rtype:  str, QString
     """
 
@@ -349,7 +351,7 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
     # Verify if the value isn't in "list_avoid_param"
     if any([avoid in old_tag for avoid in list_avoid_param]):
         # If the value is "list_avoid_param", we don't change the value
-        pass
+        return path_tag
     else:
         idx_no_style_tag_dquote = old_tag.find("{}\"".format(dict_param_key))
         idx_no_style_tag_squote = old_tag.find("{}'".format(dict_param_key))
@@ -365,8 +367,6 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
             new_tag = old_tag.replace(old_dquote_value, new_dquote_value)
             new_path_tag = path_tag.replace(old_tag, new_tag)
 
-            return new_path_tag
-
         elif idx_no_style_tag_squote != -1:
             idx_start_quote = idx_no_style_tag_squote + len(dict_param_key) + 1
             idx_end_quote = old_tag.find("'", idx_start_quote)
@@ -378,11 +378,9 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
             new_tag = old_tag.replace(old_squote_value, new_squote_value)
             new_path_tag = path_tag.replace(old_tag, new_tag)
 
-            return new_path_tag
-
         else:
             # Replace the old value by the new one define in "dict_param"
             new_tag = old_tag.replace(dict_param_key, dict_param_key + dict_param_value)
             new_path_tag = path_tag.replace(old_tag, new_tag)
 
-            return new_path_tag
+        return new_path_tag
