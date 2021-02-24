@@ -383,6 +383,6 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
         else:
             # Replace the old value by the new one define in "dict_param"
             new_tag = old_tag.replace(dict_param_key, dict_param_key + dict_param_value)
-            path_tag = path_tag.replace(old_tag, new_tag)
+            new_path_tag = path_tag.replace(old_tag, new_tag)
 
-            return path_tag
+            return new_path_tag
