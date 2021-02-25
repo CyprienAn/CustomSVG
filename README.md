@@ -1,8 +1,8 @@
 # What does this plugin do?
-It allows adaptation of SVG files so that they're editable in QGIS.
+It creates a copy of an SVG file to allow customization of SVG symbol settings in QGIS.
 
 # How?
-It modifies all SVGs in a folder by replacing the parameters contained in the `path` tags and re-saving the new SVG in the format ` qgs_oldname.svg`.
+It modifies all SVGs in a folder by replacing the parameters contained in the `path` tags and re-saving the new SVGs in the format ` qgs_oldname.svg`.
 The parameters taken into account are as follows:
 * fill: `param (fill)`,
 * fill-opacity: `param (fill-opacity)`,
