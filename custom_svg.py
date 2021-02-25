@@ -353,10 +353,15 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
         # If the value is "list_avoid_param", we don't change the value
         return path_tag
     else:
+        # SVG file have different shape. We check to case :
+        # "<path fill = '#000' ..." or "<path style = 'fill : #000 ...'"
+
+        # First case, only the parameter value is between " or ' : <path fill = "#000" stroke = "1" ...
         idx_no_style_tag_dquote = old_tag.find("{}\"".format(dict_param_key))
         idx_no_style_tag_squote = old_tag.find("{}'".format(dict_param_key))
 
         if idx_no_style_tag_dquote != -1:
+            # Add the new parameter between double quote
             idx_start_quote = idx_no_style_tag_dquote + len(dict_param_key) + 1
             idx_end_quote = old_tag.find('"', idx_start_quote)
             old_dquote_value = old_tag[idx_no_style_tag_dquote:idx_end_quote + 1]
@@ -364,10 +369,12 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
             dquote_value = old_dquote_value[idx_dquote_value + 1:]
             new_dquote_value = old_dquote_value.replace(dquote_value, dict_param_value + dquote_value)
 
+            # Replace the old value by the new one define in "dict_param"
             new_tag = old_tag.replace(old_dquote_value, new_dquote_value)
             new_path_tag = path_tag.replace(old_tag, new_tag)
 
         elif idx_no_style_tag_squote != -1:
+            # Add the new parameter between double quote
             idx_start_quote = idx_no_style_tag_squote + len(dict_param_key) + 1
             idx_end_quote = old_tag.find("'", idx_start_quote)
             old_squote_value = old_tag[idx_no_style_tag_squote:idx_end_quote + 1]
@@ -375,10 +382,12 @@ def replace_parameter(old_tag, dict_param_key, dict_param_value, path_tag):
             squote_value = old_squote_value[idx_squote_value + 1:]
             new_squote_value = old_squote_value.replace(squote_value, dict_param_value + squote_value)
 
+            # Replace the old value by the new one define in "dict_param"
             new_tag = old_tag.replace(old_squote_value, new_squote_value)
             new_path_tag = path_tag.replace(old_tag, new_tag)
 
         else:
+            # Second case, parameter and parameter value are between quote : <path style = "fill : #000 ; stroke : 1..."
             # Replace the old value by the new one define in "dict_param"
             new_tag = old_tag.replace(dict_param_key, dict_param_key + dict_param_value)
             new_path_tag = path_tag.replace(old_tag, new_tag)
