@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="lbl_descript">
        <property name="text">
-        <string>SVGs found in the input folder will be matched and named in the output &quot;qgs _ ***. svg&quot; format. If any SVGs are already named this way, they will be replaced.</string>
+        <string>SVGs found in the input folder will be modified and named in the output format &quot;qgs_***.svg&quot;. If SVGs are already named this way, they will be replaced.</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -44,7 +44,7 @@
        <item>
         <widget class="QLabel" name="lbl_input">
          <property name="text">
-          <string>Choose the folder containing the SVGs (all SVGs in the folder will be processed) :</string>
+          <string>Choose input folder (all SVGs in the folder will be processed):</string>
          </property>
         </widget>
        </item>
@@ -75,7 +75,7 @@
           <locale language="English" country="UnitedStates"/>
          </property>
          <property name="text">
-          <string>Choose the folder where to save the new SVGs :</string>
+          <string>Choose output folder:</string>
          </property>
         </widget>
        </item>
